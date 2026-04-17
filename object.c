@@ -100,6 +100,14 @@ int object_exists(const ObjectID *id) {
 int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_out) {
   // TODO: Implement
   sprintf(header, "%s %zu", type, len);
+
+  size_t header_len = strlen(header);
+  size_t total_size = header_len + 1 + len;
+  unsigned char *buffer = malloc(total_size);
+
+  memcpy(buffer, header, header_len);
+  buffer[header_len] = '\0';
+  memcpy(buffer + header_len + 1, data, len);
 }
 
 // Read an object from the store.

@@ -142,7 +142,7 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   fclose(f);
   
   free(buffer);
-  strcpy(id_out, hex);
+  memcpy(id_out, hash, 32);
   return 0;
 }
 

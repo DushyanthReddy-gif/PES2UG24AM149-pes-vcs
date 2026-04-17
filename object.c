@@ -119,6 +119,24 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
       sprintf(hex + i * 2, "%02x", hash[i]);
   }
   hex[64] = '\0';
+  
+  char dir[256];
+  sprintf(dir, ".pes/objects/%.2s", hex);
+
+  mkdir(".pes", 0755);
+  mkdir(".pes/objects", 0755);
+  mkdir(dir, 0755);
+
+  char path[512];
+  sprintf(path, "%s/%s", dir, hex + 2);
+
+  FILE *f = fopen(path, "wb");
+  fwrite(buffer, 1, total_size, f);
+  fclose(f);
+  
+  free(buffer);
+  strcpy(id_out, hex);
+  return 0;
 }
 
 // Read an object from the store.

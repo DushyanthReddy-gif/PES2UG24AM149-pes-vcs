@@ -215,5 +215,12 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     size_t commit_len;
     if (commit_serialize(&commit, &commit_data, &commit_len) != 0) {
         return -1;
-    }    
+    } 
+    // Step 6: Write commit object
+    if (object_write(OBJ_COMMIT, commit_data, commit_len, commit_id_out) != 0) {
+        free(commit_data);
+        return -1;
+    }
+    free(commit_data);
+   
 }

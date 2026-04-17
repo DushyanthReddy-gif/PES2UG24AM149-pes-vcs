@@ -156,8 +156,21 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
       return -1;
   }
   close(fd);
+  //Atomic rename and fsync the directory
+  if (rename(tmp_path, path) != 0) {
+    unlink(tmp_path);
+    free(full_obj);
+    return -1;
+  }
 
+  int dir_fd = open(shard_dir, O_RDONLY);
+  if (dir_fd >= 0) {
+      fsync(dir_fd);
+      close(dir_fd);
+  }
 
+  free(full_obj);
+  return 0;
 }
 
 // Read an object from the store.

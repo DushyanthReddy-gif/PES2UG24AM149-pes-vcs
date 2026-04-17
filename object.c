@@ -99,7 +99,7 @@ int object_exists(const ObjectID *id) {
 //
 // Returns 0 on success, -1 on error.
 int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_out) {
-  // TODO: Implement
+// TODO: Implement
   const char *type_str;
 
   if (type == OBJ_BLOB) type_str = "blob";
@@ -110,12 +110,10 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   char header[64];
   int header_len = snprintf(header, sizeof(header), "%s %zu", type_str, len) + 1;
 
-  // Allocate buffer for full object (header + data)
   size_t full_len = header_len + len;
   uint8_t *full_obj = malloc(full_len);
-  if (!full_obj) return -1;
-    
-  memcpy(full_obj, header, header_len);
+
+  memcpy(full_obj, header, header_len);         
   memcpy(full_obj + header_len, data, len);
 
   // Compute SHA-256 hash of full object
@@ -128,13 +126,18 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   }
 
    // Create shard directory
-  char path[512];
-  object_path(id_out, path, sizeof(path));
-    
-  char shard_dir[512];
+  // Create shard directory
   char hex[HASH_HEX_SIZE + 1];
   hash_to_hex(id_out, hex);
-  snprintf(shard_dir, sizeof(shard_dir), "%s/%.2s", OBJECTS_DIR, hex);
+
+  char shard_dir[512];
+  snprintf(shard_dir, sizeof(shard_dir), ".pes/objects/%.2s", hex);
+
+  char path[512];
+  snprintf(path, sizeof(path), ".pes/objects/%.2s/%s", hex, hex + 2);
+
+  mkdir(".pes", 0755);
+  mkdir(".pes/objects", 0755);
   mkdir(shard_dir, 0755);
   //Write to temporary file and fsync the file
   char tmp_path[520];

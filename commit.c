@@ -222,5 +222,11 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
         return -1;
     }
     free(commit_data);
-   
+
+    // Step 7: Update HEAD
+    if (head_update(commit_id_out) != 0) {
+        return -1;
+    }
+    
+    return 0;   
 }

@@ -11,7 +11,7 @@
 ### .env
 This file contains the `PES_AUTHOR` environment variable required by the assignment:
 ```
-PES_AUTHOR="PES User <PES2UG24AM149>"
+PES_AUTHOR="PES User <PES2UG24AM149>" or "Dushyanth Reddy ,PES2UG24AM149" 
 ```
 
 **Purpose:** The README specifies that PES-VCS reads the author name from the `PES_AUTHOR` environment variable. This file provides a convenient way to set this variable before running commands.
@@ -105,9 +105,13 @@ Implemented commit creation with parent linking and history traversal.
 **Screenshot: Full integration test (Part 1)**
 <!-- Attach: Screenshots/final_integration_part1.png -->
 
+<img width="1117" height="807" alt="Integration-test_1" src="https://github.com/user-attachments/assets/37311517-c058-4752-ac11-a4027b4b0ff1" />
+
+
 
 **Screenshot: Full integration test (Part 2)**
 <!-- Attach: Screenshots/final_integration_part2.png -->
+<img width="644" height="884" alt="integration-test_2" src="https://github.com/user-attachments/assets/c5242862-879f-486e-8930-99ff01931b6a" />
 
 
 ---

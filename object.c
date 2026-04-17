@@ -106,7 +106,7 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   char header[64];
   int header_len = snprintf(header, sizeof(header), "%s %zu", type_str, len) + 1;
 
-      // Allocate buffer for full object (header + data)
+  // Allocate buffer for full object (header + data)
   size_t full_len = header_len + len;
   uint8_t *full_obj = malloc(full_len);
   if (!full_obj) return -1;
@@ -122,6 +122,18 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
       free(full_obj);
       return 0;
   }
+
+   // Create shard directory
+  char path[512];
+  object_path(id_out, path, sizeof(path));
+    
+  char shard_dir[512];
+  char hex[HASH_HEX_SIZE + 1];
+  hash_to_hex(id_out, hex);
+  snprintf(shard_dir, sizeof(shard_dir), "%s/%.2s", OBJECTS_DIR, hex);
+  mkdir(shard_dir, 0755);
+
+
 }
 
 // Read an object from the store.

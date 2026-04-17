@@ -105,6 +105,14 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
 
   char header[64];
   int header_len = snprintf(header, sizeof(header), "%s %zu", type_str, len) + 1;
+
+      // Allocate buffer for full object (header + data)
+  size_t full_len = header_len + len;
+  uint8_t *full_obj = malloc(full_len);
+  if (!full_obj) return -1;
+    
+  memcpy(full_obj, header, header_len);
+  memcpy(full_obj + header_len, data, len);
 }
 
 // Read an object from the store.

@@ -24,7 +24,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+#include <time.h>
 // Forward declarations (implemented in object.c)
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_t *len_out);
@@ -130,7 +130,10 @@ int head_read(ObjectID *id_out) {
     FILE *f = fopen(HEAD_FILE, "r");
     if (!f) return -1;
     char line[512];
-    if (!fgets(line, sizeof(line), f)) { fclose(f); return -1; }
+    if (fgets(line, sizeof(line), f) == NULL) {
+        fclose(f);
+        return -1;
+    }
     fclose(f);
     line[strcspn(line, "\r\n")] = '\0'; // strip newline
 
@@ -151,7 +154,10 @@ int head_update(const ObjectID *new_commit) {
     FILE *f = fopen(HEAD_FILE, "r");
     if (!f) return -1;
     char line[512];
-    if (!fgets(line, sizeof(line), f)) { fclose(f); return -1; }
+    if (fgets(line, sizeof(line), f) == NULL) {
+    fclose(f);
+    return -1;
+}
     fclose(f);
     line[strcspn(line, "\r\n")] = '\0';
 
@@ -166,7 +172,10 @@ int head_update(const ObjectID *new_commit) {
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", target_path);
     
     f = fopen(tmp_path, "w");
-    if (!f) return -1;
+    if (!f) {
+        unlink(tmp_path);
+        return -1;
+    }
     
     char hex[HASH_HEX_SIZE + 1];
     hash_to_hex(new_commit, hex);
@@ -210,6 +219,16 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     } else {
         commit.has_parent = 0;
     }
+    // Step 3: Set author and timestamp
+    const char *author = pes_author();
+    strncpy(commit.author, author, sizeof(commit.author) - 1);
+    commit.author[sizeof(commit.author) - 1] = '\0';
+    commit.timestamp = (uint64_t)time(NULL);
+
+    // Step 4: Set message
+    strncpy(commit.message, message, sizeof(commit.message) - 1);
+    commit.message[sizeof(commit.message) - 1] = '\0';
+
     // Step 5: Serialize commit
     void *commit_data;
     size_t commit_len;

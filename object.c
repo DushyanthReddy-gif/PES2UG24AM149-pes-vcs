@@ -12,6 +12,7 @@
 #include "pes.h"
 #include <fcntl.h>
 #include <openssl/evp.h>
+#include <openssl/sha.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,6 +110,9 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   memcpy(buffer, header, header_len);
   buffer[header_len] = '\0';
   memcpy(buffer + header_len + 1, data, len);
+ 
+  unsigned char hash[32];
+  SHA256(buffer, total_size, hash);
 }
 
 // Read an object from the store.

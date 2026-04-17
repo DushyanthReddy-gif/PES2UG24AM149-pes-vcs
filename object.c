@@ -116,6 +116,12 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
 
   // Compute SHA-256 hash of full object
   compute_hash(full_obj, full_len, id_out);
+
+  //Check if object already exists (deduplication)
+  if (object_exists(id_out)) {
+      free(full_obj);
+      return 0;
+  }
 }
 
 // Read an object from the store.

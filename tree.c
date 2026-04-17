@@ -132,8 +132,25 @@ int tree_serialize(const Tree *tree, void **data_out, size_t *len_out) {
 static int build_tree_recursive(IndexEntry *entries, int count, const char *prefix, ObjectID *id_out) {
     Tree tree;
     tree.count = 0;
+    size_t prefix_len = strlen(prefix);
 
-   
+    for (int i = 0; i < count; i++) {
+        if (prefix_len > 0) {
+            if (strncmp(entries[i].path, prefix, prefix_len) != 0) continue;
+            if (entries[i].path[prefix_len] != '/') continue;
+        }
+
+        const char *rel_path = entries[i].path + (prefix_len > 0 ? prefix_len + 1 : 0);
+        const char *slash = strchr(rel_path, '/');
+
+        if (slash == NULL) {
+            TreeEntry *entry = &tree.entries[tree.count++];
+            entry->mode = entries[i].mode;
+            entry->hash = entries[i].hash;
+            strcpy(entry->name, rel_path);
+        }
+     }
+       
 
     return 0;
 }

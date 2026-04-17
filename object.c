@@ -101,7 +101,14 @@ int object_exists(const ObjectID *id) {
 int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_out) {
   // TODO: Implement
   char header[64];
-  sprintf(header, "%s %zu", type, len);
+  const char *type_str;
+
+  if (type == OBJ_BLOB) type_str = "blob"; 
+  else if (type == OBJ_TREE) type_str = "tree";
+  else if (type == OBJ_COMMIT) type_str = "commit";
+  else return -1;
+
+  sprintf(header, "%s %zu", type_str, len);
 
   size_t header_len = strlen(header);
   size_t total_size = header_len + 1 + len;

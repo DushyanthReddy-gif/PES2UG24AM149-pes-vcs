@@ -113,6 +113,12 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
  
   unsigned char hash[32];
   SHA256(buffer, total_size, hash);
+
+  char hex[65];
+  for (int i = 0; i < 32; i++) {
+      sprintf(hex + i * 2, "%02x", hash[i]);
+  }
+  hex[64] = '\0';
 }
 
 // Read an object from the store.

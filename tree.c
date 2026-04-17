@@ -187,9 +187,17 @@ static int build_tree_recursive(IndexEntry *entries, int count, const char *pref
 	    }
 	}
      }
-       
+     
+     void *tree_data;
+     size_t tree_len;
 
-    return 0;
+     if (tree_serialize(&tree, &tree_data, &tree_len) != 0)
+         return -1;
+
+     int result = object_write(OBJ_TREE, tree_data, tree_len, id_out);
+     free(tree_data);
+
+     return result;
 }
 
 int tree_from_index(ObjectID *id_out) {

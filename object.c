@@ -132,6 +132,30 @@ int object_write(ObjectType type, const void *data, size_t len,  ObjectID *id_ou
   hash_to_hex(id_out, hex);
   snprintf(shard_dir, sizeof(shard_dir), "%s/%.2s", OBJECTS_DIR, hex);
   mkdir(shard_dir, 0755);
+  //Write to temporary file and fsync the file
+  char tmp_path[520];
+  snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", path);
+
+  int fd = open(tmp_path, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+  if (fd < 0) {
+      free(full_obj);
+      return -1;
+  }
+
+  if (write(fd, full_obj, full_len) != (ssize_t)full_len) {
+      close(fd);
+      unlink(tmp_path);
+      free(full_obj);
+      return -1;
+  }
+
+  if (fsync(fd) != 0) {
+      close(fd);
+      unlink(tmp_path);
+      free(full_obj);
+      return -1;
+  }
+  close(fd);
 
 
 }

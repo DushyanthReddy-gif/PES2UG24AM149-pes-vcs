@@ -148,7 +148,44 @@ static int build_tree_recursive(IndexEntry *entries, int count, const char *pref
             entry->mode = entries[i].mode;
             entry->hash = entries[i].hash;
             strcpy(entry->name, rel_path);
-        }
+        }else {
+            size_t dir_len = slash - rel_path;
+            char dir_name[256];
+
+            if (dir_len >= sizeof(dir_name)) continue;
+
+   	    memcpy(dir_name, rel_path, dir_len);
+    	    dir_name[dir_len] = '\0';
+
+	    // Check if directory already added
+	    int already_added = 0;
+	    for (int j = 0; j < tree.count; j++) {
+	        if (strcmp(tree.entries[j].name, dir_name) == 0) {
+	            already_added = 1;
+	            break;
+	        }
+	    }
+
+	    if (!already_added) {
+	        char sub_prefix[512];
+
+	        if (prefix_len > 0)
+	            snprintf(sub_prefix, sizeof(sub_prefix), "%s/%s", prefix, dir_name);
+
+	        else
+	            snprintf(sub_prefix, sizeof(sub_prefix), "%s", dir_name);
+
+	        ObjectID sub_id;
+
+	        if (build_tree_recursive(entries, count, sub_prefix, &sub_id) != 0)
+	            return -1;
+
+	        TreeEntry *entry = &tree.entries[tree.count++];
+	        entry->mode = MODE_DIR;
+	        entry->hash = sub_id;
+	        strcpy(entry->name, dir_name);
+	    }
+	}
      }
        
 

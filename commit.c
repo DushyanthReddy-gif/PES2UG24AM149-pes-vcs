@@ -201,5 +201,14 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     // Step 1: Build tree from index
     if (tree_from_index(&commit.tree) != 0) {
         return -1;
-    }    
+    }
+    // Step 2: Get parent commit (if exists)
+    ObjectID parent_id;
+    if (head_read(&parent_id) == 0) {
+        commit.has_parent = 1;
+        commit.parent = parent_id;
+    } else {
+        commit.has_parent = 0;
+    }
+    
 }

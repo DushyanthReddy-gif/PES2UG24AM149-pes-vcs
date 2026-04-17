@@ -8,14 +8,15 @@
 //
 // Example single entry (conceptual):
 //   "100644 hello.txt\0" followed by 32 raw bytes of SHA-256
-
+#include "pes.h"
 #include "tree.h"
 #include <stdio.h>
+#include "index.h"
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
-
+int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 // ─── Mode Constants ─────────────────────────────────────────────────────────
 
 #define MODE_FILE      0100644
